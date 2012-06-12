@@ -1,0 +1,25 @@
+Changes
+examples/pop3s.pl
+examples/pop3.pl
+examples/imaps.pl
+examples/imap.pl
+examples/smtps.pl
+examples/smtp.pl
+lib/IO/Socket/CLI/POP3S.pm
+lib/IO/Socket/CLI/SMTP.pm
+lib/IO/Socket/CLI/IMAPS.pm
+lib/IO/Socket/CLI/IMAP.pm
+lib/IO/Socket/CLI/POP3.pm
+lib/IO/Socket/CLI/SMTPS.pm
+lib/IO/Socket/CLI.pm
+LICENSE
+Makefile.PL
+MANIFEST
+README
+t/15_pod-coverage.t
+t/10_pod.t
+t/20_manifest.t
+t/00_load.t
+Todo
+META.yml                                 Module YAML meta-data (added by MakeMaker)
+META.json                                Module JSON meta-data (added by MakeMaker)
