@@ -6,6 +6,14 @@ use strict;
 use warnings;
 use Test::More tests => 65;	# total tests, including those in SKIP blocks.
 
+my $server_tests = 0;
+if (open CONFIG, "<test.config") {
+    my $config = <CONFIG>;
+    $config =~ /^network_tests (\d)$/;
+    $server_tests = $1;
+    close CONFIG;
+}
+
 # fake STDIN. takes newline-terminated string, or 0, as arg.
 sub fake_stdin {
     my $input = shift;
@@ -63,8 +71,9 @@ can_ok('IO::Socket::CLI', qw(new read response print_resp is_open send prompt pr
 note('initializing');
 my $object = IO::Socket::CLI->new(PORT => '143'); # TODO: test with the various options.
 isa_ok($object, 'IO::Socket::CLI');
-$object->is_open() || BAIL_OUT("something wrong with server -- can't continue test");
-
+if ($server_tests) {
+    $object->is_open() || BAIL_OUT("something wrong with server -- can't continue test");
+}
 
 note('test options');
 is($object->{_HOST}, '127.0.0.1', '_HOST default'); # passed directly to IO::Socket::INET6
@@ -117,82 +126,87 @@ is($object->debug(0), 0, 'debug() default');
 
 redirect_stderr(0);
 
-note('general testing');
-
-redirect_stdout(1);
-
-cmp_ok($object->response(), '==', 0, 'response() before read()');
-
-my @read = $object->read();
-cmp_ok(@read, '>=', 0, 'read()'); # can't guarantee a response.
-my @read_stdout = <OUTIN>;
-
-my @response = $object->response();
-cmp_ok(@response, '>=', 0, 'response() after read()'); # can't guarantee a response.
-is_deeply(\@response, \@read, '@response eq @read');
-
-eval { $object->print_resp() };  is($@, '', 'print_resp()');
-my @print_resp_stdout = <OUTIN>;
-is_deeply(\@print_resp_stdout, \@read_stdout, '@print_resp_stdout eq @read_stdout');
-
-is($object->is_open(), 1, 'is_open()');
-
-my $tag = 0;
-
-eval { $object->send(++$tag . " capability") }; is($@, '', "send(\"$tag capability\")");
-
-redirect_stdout(0);
-
-# fake sending capability from STDIN
-fake_stdin(++$tag . " capability\n");
-
-$object->prepend(0); # to prevent TAP syntax errors caused by prompt
-eval { $object->prompt() }; is($@, '', 'prompt()');
-$object->prepend(1);
-cmp_ok($object->read(), '>=', 0, 'read()'); # can't guarantee a response.
-is($object->command(), "$tag capability", 'command()');
-
-fake_stdin(0);
-
-isa_ok($object->socket(), 'IO::Socket::INET6');
-
-# send capability and test STDIN and STDOUT:
 SKIP: {
-    my $command = ++$tag . " capability";
-    my $is_open = $object->is_open();
-    is($is_open, 1, 'is_open()');
-    skip "connection is closed", 7 unless $is_open;
+    skip "Not running IMAP 127.0.0.1:143 tests", 26 unless $server_tests;
+
+    note('IMAP testing on 127.0.0.1:143');
 
     redirect_stdout(1);
 
-    eval { $object->send("$command") }; is($@, '', "send(\"$command\") SKIP");
-    is(<OUTIN>, "C: $command\r\n", 'command string on STDOUT');
-    cmp_ok($object->read(), '>=', 0, 'read()'); # can't guarantee a response.
-    like(join('', <OUTIN>), qr/S: \* CAPABILITY.*\r\nS: $tag OK(?: |\r$)/, 'response string on STDOUT');
-    cmp_ok($object->response(), '>=', 0, 'response() after read()'); # can't guarantee a response.
-    eval { $object->print_resp() }; is($@, '', 'print_resp()');
-    like(join('', <OUTIN>), qr/S: $tag OK/, 'response string on STDOUT');
+    cmp_ok($object->response(), '==', 0, 'response() before read()');
+
+    my @read = $object->read();
+    cmp_ok(@read, '>=', 0, 'read()'); # can't guarantee a response.
+    my @read_stdout = <OUTIN>;
+
+    my @response = $object->response();
+    cmp_ok(@response, '>=', 0, 'response() after read()'); # can't guarantee a response.
+    is_deeply(\@response, \@read, '@response eq @read');
+
+    eval { $object->print_resp() };  is($@, '', 'print_resp()');
+    my @print_resp_stdout = <OUTIN>;
+    is_deeply(\@print_resp_stdout, \@read_stdout, '@print_resp_stdout eq @read_stdout');
+
+    is($object->is_open(), 1, 'is_open()');
+
+    my $tag = 0;
+
+    eval { $object->send(++$tag . " capability") }; is($@, '', "send(\"$tag capability\")");
 
     redirect_stdout(0);
-}
 
-# LOGOUT:
-SKIP: {
+    # fake sending capability from STDIN
+    fake_stdin(++$tag . " capability\n");
 
-    my $is_open = $object->is_open();
-    is($is_open, 1, 'is_open()');
-    skip "connection is closed", 4 unless $is_open;
-
-    redirect_stdout(1);
-
-    eval { $object->send("final LOGOUT") }; is($@, '', "send(\"final LOGOUT\")");
-    is(<OUTIN>, "C: final LOGOUT\r\n", 'command string on STDOUT');
+    $object->prepend(0); # to prevent TAP syntax errors caused by prompt
+    eval { $object->prompt() }; is($@, '', 'prompt()');
+    $object->prepend(1);
     cmp_ok($object->read(), '>=', 0, 'read()'); # can't guarantee a response.
-    like(<OUTIN>, qr/S: \* BYE(?: |\r?$)/, 'response string on STDOUT');
+    is($object->command(), "$tag capability", 'command()');
 
-    redirect_stdout(0);
+    fake_stdin(0);
+
+    isa_ok($object->socket(), 'IO::Socket::INET6');
+
+    # send capability and test STDIN and STDOUT:
+    SKIP: {
+        my $command = ++$tag . " capability";
+        my $is_open = $object->is_open();
+        is($is_open, 1, 'is_open()');
+        skip "connection is closed", 7 unless $is_open;
+
+        redirect_stdout(1);
+
+        eval { $object->send("$command") }; is($@, '', "send(\"$command\") SKIP");
+        is(<OUTIN>, "C: $command\r\n", 'command string on STDOUT');
+        cmp_ok($object->read(), '>=', 0, 'read()'); # can't guarantee a response.
+        like(join('', <OUTIN>), qr/S: \* CAPABILITY.*\r\nS: $tag OK(?: |\r$)/, 'response string on STDOUT');
+        cmp_ok($object->response(), '>=', 0, 'response() after read()'); # can't guarantee a response.
+        eval { $object->print_resp() }; is($@, '', 'print_resp()');
+        like(join('', <OUTIN>), qr/S: $tag OK/, 'response string on STDOUT');
+
+        redirect_stdout(0);
+    }
+
+    # LOGOUT:
+    SKIP: {
+
+        my $is_open = $object->is_open();
+        is($is_open, 1, 'is_open()');
+        skip "connection is closed", 4 unless $is_open;
+
+        redirect_stdout(1);
+
+        eval { $object->send("final LOGOUT") }; is($@, '', "send(\"final LOGOUT\")");
+        is(<OUTIN>, "C: final LOGOUT\r\n", 'command string on STDOUT');
+        cmp_ok($object->read(), '>=', 0, 'read()'); # can't guarantee a response.
+        like(<OUTIN>, qr/S: \* BYE(?: |\r?$)/, 'response string on STDOUT');
+
+        redirect_stdout(0);
+    }
+
+    is($object->close(), 1, 'close()');
+
 }
-
-is($object->close(), 1, 'close()');
 
 done_testing();

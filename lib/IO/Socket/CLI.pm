@@ -6,7 +6,7 @@ IO::Socket::CLI - CLI for IO::Socket::INET6 and IO::Socket::SSL
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =head1 SYNOPSIS
 
@@ -34,7 +34,7 @@ use Carp;
 BEGIN {
     use Exporter ();
     our ($VERSION, @ISA, @EXPORT, @EXPORT_OK, %EXPORT_TAGS);
-    $VERSION     = '0.01';
+    $VERSION     = '0.02';
     @ISA         = qw(Exporter);
     @EXPORT      = qw();	# qw( );
     @EXPORT_OK   = qw();	# ( @{ $EXPORT_TAGS{'all'} } );

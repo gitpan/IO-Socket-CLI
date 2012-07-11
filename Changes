@@ -1,6 +1,7 @@
 Revision history for Perl module IO::Socket::CLI
 
+0.02 Tue Jul 10 23:12:32 CDT 2012
+    - added prompt for IMAP server tests
+
 0.01 Mon May  7 15:55:16 2012
     - original version; created by ExtUtils::ModuleMaker 0.51
-
-
