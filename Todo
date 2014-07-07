@@ -1,5 +1,8 @@
 TODO list for Perl module IO::Socket::CLI
 
-- Nothing yet
-
-
+* tests should allow selecting a different server/port/protocol.
+* tests should be more robust (comments in file).
+* use IO::Socket::IP;
+* get rid of globals ($SSL, $PORT, $BYE)
+* no "manual OO": blessing hashes etc.
+* use Sub::Exporter instead of Exporter.

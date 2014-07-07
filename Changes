@@ -1,7 +1,17 @@
 Revision history for Perl module IO::Socket::CLI
 
+0.03 Mon Jul  7 03:25:59 EDT 2014
+   * lib/IO/Socket/CLI.pm:
+     * fixed bug in bye() which affected newer versions of perl.
+     * replaced Unicode – with ascii -
+   * t/00_load.t:
+     * replaced global filehandles with local ones in t/00_load.t.
+     * log $errin to check for unknown content and to prevent unknown
+       errors from messing up later tests.
+   * added Gitable URL to POD.
+
 0.02 Tue Jul 10 23:12:32 CDT 2012
-    - added prompt for IMAP server tests
+   * added prompt for IMAP server tests.
 
 0.01 Mon May  7 15:55:16 2012
-    - original version; created by ExtUtils::ModuleMaker 0.51
+   * original version; created by ExtUtils::ModuleMaker 0.51.

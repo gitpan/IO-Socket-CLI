@@ -6,7 +6,7 @@ IO::Socket::CLI - CLI for IO::Socket::INET6 and IO::Socket::SSL
 
 =head1 VERSION
 
-Version 0.02
+Version 0.03
 
 =head1 SYNOPSIS
 
@@ -34,7 +34,7 @@ use Carp;
 BEGIN {
     use Exporter ();
     our ($VERSION, @ISA, @EXPORT, @EXPORT_OK, %EXPORT_TAGS);
-    $VERSION     = '0.02';
+    $VERSION     = '0.03';
     @ISA         = qw(Exporter);
     @EXPORT      = qw();	# qw( );
     @EXPORT_OK   = qw();	# ( @{ $EXPORT_TAGS{'all'} } );
@@ -325,8 +325,8 @@ sub bye {
     my $self = shift;
     if (@_) {
         my $bye = shift;
-        unless ($bye =~ /\(?-xism:.*\)/) { # this may change if something like qr/STRING/...
-            carp "warning: bye() must be a regexp-like quote: qr/STRING/ -- setting to '$BYE'";
+        unless ($bye =~ /\(\?(?:-xism|\^):.*\)/) {
+            carp "warning: bye() must be a regexp-like quote: qr/STRING/ -- setting to '$BYE' instead of '$bye'";
             $bye = $BYE;
         }
         $self->{_BYE} = $bye;
@@ -377,7 +377,7 @@ sub socket {
 
 =item errstr()
 
-Returns C<errstr()> from the socket. Only for SSL—returns C<undef> otherwise.
+Returns C<errstr()> from the socket. Only for SSL - returns C<undef> otherwise.
 
 =cut
 
@@ -430,7 +430,17 @@ Does not verify SSL connections. Has not been tried with STARTTLS.
 
 =head1 SUPPORT
 
+=over 2
+
+=item * CPAN Bug Tracker
+
 L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=IO-Socket-CLI>
+
+=item * Code, Pull Requests, alternative Issues Tracker
+
+L<https://gitable.org/ashley/IO-Socket-CLI.git>
+
+=back
 
 =head1 COPYRIGHT AND LICENSE
 

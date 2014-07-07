@@ -6,7 +6,7 @@ IO::Socket::CLI::IMAPS - Command-line interface to an SSL IMAP server.
 
 =head1 VERSION
 
-Version 0.02
+Version 0.03
 
 =head1 SYNOPSIS
 
@@ -48,7 +48,17 @@ Does not verify SSL connections. Has not been tried with STARTTLS.
 
 =head1 SUPPORT
 
+=over 2
+
+=item * CPAN Bug Tracker
+
 L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=IO-Socket-CLI>
+
+=item * Code, Pull Requests, alternative Issues Tracker
+
+L<https://gitable.org/ashley/IO-Socket-CLI.git>
+
+=back
 
 =head1 COPYRIGHT AND LICENSE
 
