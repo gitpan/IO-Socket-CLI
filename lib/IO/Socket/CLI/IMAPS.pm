@@ -6,7 +6,7 @@ IO::Socket::CLI::IMAPS - Command-line interface to an SSL IMAP server.
 
 =head1 VERSION
 
-Version 0.03
+Version 0.04
 
 =head1 SYNOPSIS
 

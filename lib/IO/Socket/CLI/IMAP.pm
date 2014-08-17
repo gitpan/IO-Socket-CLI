@@ -6,7 +6,7 @@ IO::Socket::CLI::IMAP - Command-line interface to an IMAP server.
 
 =head1 VERSION
 
-Version 0.03
+Version 0.04
 
 =head1 SYNOPSIS
 

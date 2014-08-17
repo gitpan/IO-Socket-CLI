@@ -4,9 +4,16 @@ use warnings;
 use ExtUtils::MakeMaker;
 
 # modified from code in Crypt-SSLeay-0.58
+my ($host, $port);
 sub write_test_config {
     open OUT, '> test.config' or die "Cannot write test config: $!";
-    print OUT "network_tests ", is_live_test_wanted() ? 1 : 0, "\n";
+    if (is_live_test_wanted()) {
+        print OUT "network_tests 1\n";
+        print OUT "host $host\n";
+        print OUT "port $port\n";
+    } else {
+        print OUT "network_tests 0\n";
+    }
     close OUT or die "Cannot write test.config: $!";
     return;
 }
@@ -20,7 +27,12 @@ don't have an IMAP server on port 143, these tests will fail
 (through no fault of the code).
 INFO
     my $wanted = prompt "Do you want to run the live tests (y/N)?", 'N';
-    return $wanted =~ /\Ay(?:es)?/i;
+    ($wanted) = $wanted =~ /\Ay(?:es)?/i;
+    if ($wanted) {
+        $host = prompt "Enter host for tests (blank for 127.0.0.1)", '127.0.0.1';
+        $port = prompt "Enter port for tests (blank for 143)", 143;
+    }
+    return $wanted;
 }
 
 WriteMakefile(

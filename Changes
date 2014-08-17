@@ -1,5 +1,9 @@
 Revision history for Perl module IO::Socket::CLI
 
+0.04 Sat Aug 16 23:31:24 EDT 2014
+   * tests default to port 25 instead of 143 if no server tests, because of BSD (assuming SMTP is running).
+   * add options to select test server and port.
+
 0.03 Mon Jul  7 03:25:59 EDT 2014
    * lib/IO/Socket/CLI.pm:
      * fixed bug in bye() which affected newer versions of perl.

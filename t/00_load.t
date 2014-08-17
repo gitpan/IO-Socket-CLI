@@ -7,10 +7,20 @@ use warnings;
 use Test::More tests => 66;	# total tests, including those in SKIP blocks.
 
 my $server_tests = 0;
+my $host = '127.0.0.1';
+my $port = 25;
+
 if (open my $fh, '<', "test.config") {
-    my $config = <$fh>;
-    $config =~ /^network_tests (\d)$/;
-    $server_tests = $1;
+    while (<$fh>) {
+        chomp;
+        if (/^network_tests (\d)$/) {
+            $server_tests = $1;
+        } elsif (/^host (.+)$/) {
+            $host = $1;
+        } elsif (/^port (\d+)$/) {
+            $port = $1;
+        }
+    }
     close $fh;
 }
 
@@ -74,15 +84,16 @@ can_ok('IO::Socket::CLI', qw(new read response print_resp is_open send prompt pr
 
 
 note('initializing');
-my $object = IO::Socket::CLI->new(PORT => '143'); # TODO: test with the various options.
+my $object = IO::Socket::CLI->new(HOST => $host, PORT => $port); # TODO: test with the various options.
 isa_ok($object, 'IO::Socket::CLI');
 if ($server_tests) {
+    sleep 1;
     $object->is_open() || BAIL_OUT("something wrong with server -- can't continue test");
 }
 
 note('test options');
-is($object->{_HOST}, '127.0.0.1', '_HOST default'); # passed directly to IO::Socket::INET6
-is($object->{_PORT}, '143', '_PORT default'); # should be >= 1 and <= 65535. passed directly to IO::Socket::INET6
+is($object->{_HOST}, $host, '_HOST default'); # passed directly to IO::Socket::INET6
+is($object->{_PORT}, $port, '_PORT default'); # should be >= 1 and <= 65535. passed directly to IO::Socket::INET6
 
 
 note('testing methods which change initialized values'); # TODO: later test if the changes actually have the desired effect with other methods.
@@ -142,9 +153,9 @@ is(@ignored_errors, 0, '@ignored_errors == 0');
 redirect_stderr(0);
 
 SKIP: {
-    skip "Not running IMAP 127.0.0.1:143 tests", 26 unless $server_tests;
+    skip "Not running IMAP $host:$port tests", 26 unless $server_tests;
 
-    note('IMAP testing on 127.0.0.1:143');
+    note("IMAP testing on $host:$port");
 
     redirect_stdout(1);
 
