@@ -1,4 +1,17 @@
 package IO::Socket::CLI::SMTP;
+$IO::Socket::CLI::SMTP::VERSION = '0.041';
+use 5.006;
+use strict;
+use warnings;
+use IO::Socket::CLI;
+our @ISA = ("IO::Socket::CLI");
+
+$IO::Socket::CLI::PORT = '25'; # 587 common for login
+$IO::Socket::CLI::BYE = qr'^(?:221|421)(?: |\r?$)'; # string received when a SMTP server disconnects, i think something *must* follow the code
+
+1;
+
+__END__
 
 =head1 NAME
 
@@ -6,7 +19,7 @@ IO::Socket::CLI::SMTP - Command-line interface to an SMTP server.
 
 =head1 VERSION
 
-Version 0.04
+version 0.041
 
 =head1 SYNOPSIS
 
@@ -27,41 +40,17 @@ L<IO::Socket::INET6> and L<IO::Socket::SSL>.
 =head1 EXPORT
 None by default.
 
-=cut
-
 =head1 METHODS
 
 See C<IO::Socket::CLI>.
-
-=cut
-
-use IO::Socket::CLI;
-@ISA = ("IO::Socket::CLI");
-
-$IO::Socket::CLI::PORT = '25'; # 587 common for login
-$IO::Socket::CLI::BYE = qr'^(?:221|421)(?: |\r?$)'; # string received when a SMTP server disconnects, i think something *must* follow the code
 
 =head1 BUGS
 
 Does not verify SSL connections. Has not been tried with STARTTLS.
 
-=head1 SUPPORT
-
-=over 2
-
-=item * CPAN Bug Tracker
-
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=IO-Socket-CLI>
-
-=item * Code, Pull Requests, alternative Issues Tracker
-
-L<https://gitable.org/ashley/IO-Socket-CLI.git>
-
-=back
-
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2012 by Ashley Willis E<lt>ashleyw@cpan.orgE<gt>
+Copyright (C) 2012-2014 by Ashley Willis E<lt>ashley+perl@gitable.orgE<gt>
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.12.4 or,
@@ -69,9 +58,12 @@ at your option, any later version of Perl 5 you may have available.
 
 =head1 SEE ALSO
 
-L<IO::Socket::CLI>, L<IO::Socket::INET6>, L<IO::Socket::INET>,
-L<IO::Socket::SSL>, L<IO::Socket>
+L<IO::Socket::CLI>
 
-=cut
+L<IO::Socket::INET6>
 
-1;
+L<IO::Socket::INET>
+
+L<IO::Socket::SSL>
+
+L<IO::Socket>
